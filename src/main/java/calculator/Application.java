@@ -6,9 +6,19 @@ import java.util.Arrays;
 public class Application {
     public static void main(String[] args) throws IllegalArgumentException {
         String input = input();
+        validateNumeric(input);
         validateNegative(input);
         int sum = splitByDefaultDelimiterAndSum(input);
         output(sum);
+    }
+
+    private static void validateNumeric(String input) throws IllegalArgumentException {
+        String[] split = input.split(",|:");
+        boolean isAllNumeric = Arrays.stream(split)
+                .allMatch(n -> n.matches("/^[0-9]*$/"));
+        if (!isAllNumeric) {
+            throw new IllegalArgumentException("[ERROR] 숫자가 아닌 값은 입력할 수 없습니다.");
+        }
     }
 
     private static void validateNegative(String input) throws IllegalArgumentException {
