@@ -2,27 +2,44 @@ package calculator;
 
 import camp.nextstep.edu.missionutils.Console;
 import java.util.Arrays;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Application {
     public static void main(String[] args) throws IllegalArgumentException {
         String input = input();
-        validateNumeric(input);
-        validateNegative(input);
-        int sum = splitByDefaultDelimiterAndSum(input);
+        InputInfo inputInfo = publishInputInfo(input);
+        validateNumeric(inputInfo.numbers(), inputInfo.delimiter());
+        validateNegative(inputInfo.numbers(), inputInfo.delimiter());
+        int sum = splitByDelimiterAndSum(inputInfo.numbers(), inputInfo.delimiter());
         output(sum);
     }
 
-    private static void validateNumeric(String input) throws IllegalArgumentException {
-        String[] split = input.split(",|:");
+    private static InputInfo publishInputInfo(final String input) {
+        Pattern pattern = Pattern.compile("//(.)\\\\n(.*)");
+        Matcher matcher = pattern.matcher(input);
+        boolean hasCustomDelimiter = matcher.find();
+        if (hasCustomDelimiter) {
+            String delimiter = matcher.group(1);
+            String numbers = matcher.group(2);
+            return new InputInfo(numbers, delimiter);
+        } else {
+            return new InputInfo(input, ",|:");
+        }
+
+    }
+
+    private static void validateNumeric(String input, String delimiter) throws IllegalArgumentException {
+        String[] split = input.split(delimiter);
         boolean isAllNumeric = Arrays.stream(split)
-                .allMatch(n -> n.matches("/^[0-9]*$/"));
+                .allMatch(n -> n.trim().matches("[0-9]+"));
         if (!isAllNumeric) {
             throw new IllegalArgumentException("[ERROR] 숫자가 아닌 값은 입력할 수 없습니다.");
         }
     }
 
-    private static void validateNegative(String input) throws IllegalArgumentException {
-        String[] split = input.split(",|:");
+    private static void validateNegative(String input, String delimiter) throws IllegalArgumentException {
+        String[] split = input.split(delimiter);
         boolean hasNegative = Arrays.stream(split)
                 .mapToInt(Integer::parseInt)
                 .anyMatch(n -> n < 0);
@@ -37,8 +54,8 @@ public class Application {
         );
     }
 
-    private static int splitByDefaultDelimiterAndSum(String input) {
-        String[] split = input.split(",|:");
+    private static int splitByDelimiterAndSum(String input, String delimiter) {
+        String[] split = input.split(delimiter);
         int sum = Arrays.stream(split)
                 .mapToInt(Integer::parseInt)
                 .sum();
