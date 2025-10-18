@@ -6,14 +6,23 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Application {
-    public static void main(String[] args) throws IllegalArgumentException {
-        String input = input();
-        InputInfo inputInfo = publishInputInfo(input);
-        validateNumeric(inputInfo.numbers(), inputInfo.delimiter());
-        validateNegative(inputInfo.numbers(), inputInfo.delimiter());
-        int sum = splitByDelimiterAndSum(inputInfo.numbers(), inputInfo.delimiter());
-        output(sum);
+    public static void main(String[] args) {
+        try {
+            String input = input();
+            if (input.isBlank()) {
+                output(0);
+                return;
+            }
+            InputInfo inputInfo = publishInputInfo(input);
+            validateNumeric(inputInfo.numbers(), inputInfo.delimiter());
+            validateNegative(inputInfo.numbers(), inputInfo.delimiter());
+            int sum = splitByDelimiterAndSum(inputInfo.numbers(), inputInfo.delimiter());
+            output(sum);
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+        }
     }
+
 
     private static InputInfo publishInputInfo(final String input) {
         Pattern pattern = Pattern.compile("//(.)\\\\n(.*)");
