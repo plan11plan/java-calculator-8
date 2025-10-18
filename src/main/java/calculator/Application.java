@@ -19,7 +19,7 @@ public class Application {
             int sum = splitByDelimiterAndSum(inputInfo.numbers(), inputInfo.delimiter());
             output(sum);
         } catch (IllegalArgumentException e) {
-            System.out.println(e.getMessage());
+            throw e;
         }
     }
 
