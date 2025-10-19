@@ -6,7 +6,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Application {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IllegalArgumentException {
+        long startTime = System.currentTimeMillis();
         try {
             String input = input();
             if (input.isBlank()) {
@@ -18,11 +19,11 @@ public class Application {
             validateNegative(inputInfo.numbers(), inputInfo.delimiter());
             int sum = splitByDelimiterAndSum(inputInfo.numbers(), inputInfo.delimiter());
             output(sum);
-        } catch (IllegalArgumentException e) {
-            throw e;
+        } finally {
+            long endTime = System.currentTimeMillis();
+            System.out.println("[LOG] 실행 시간: " + (endTime - startTime) + "ms");
         }
     }
-
 
     private static InputInfo publishInputInfo(final String input) {
         Pattern pattern = Pattern.compile("//(.)\\\\n(.*)");
@@ -37,7 +38,7 @@ public class Application {
         }
 
     }
-
+    
     private static void validateNumeric(String input, String delimiter) throws IllegalArgumentException {
         String[] split = input.split(delimiter);
         boolean isAllNumeric = Arrays.stream(split)
