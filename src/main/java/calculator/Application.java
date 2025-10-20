@@ -6,7 +6,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Application {
+    private static final Pattern CUSTOM_DELIMITER_PATTERN = Pattern.compile("//(.)\\\\n(.*)");
+    private static final Pattern NUMERIC_PATTERN = Pattern.compile("[0-9]+");
+
     public static void main(String[] args) throws IllegalArgumentException {
+
         long startTime = System.currentTimeMillis();
         try {
             String input = input();
@@ -26,8 +30,7 @@ public class Application {
     }
 
     private static InputInfo publishInputInfo(final String input) {
-        Pattern pattern = Pattern.compile("//(.)\\\\n(.*)");
-        Matcher matcher = pattern.matcher(input);
+        Matcher matcher = CUSTOM_DELIMITER_PATTERN.matcher(input);
         boolean hasCustomDelimiter = matcher.find();
         if (hasCustomDelimiter) {
             String delimiter = matcher.group(1);
@@ -38,11 +41,11 @@ public class Application {
         }
 
     }
-    
+
     private static void validateNumeric(String input, String delimiter) throws IllegalArgumentException {
         String[] split = input.split(delimiter);
         boolean isAllNumeric = Arrays.stream(split)
-                .allMatch(n -> n.trim().matches("[0-9]+"));
+                .allMatch(n -> NUMERIC_PATTERN.matcher(n.trim()).matches());
         if (!isAllNumeric) {
             throw new IllegalArgumentException("[ERROR] 숫자가 아닌 값은 입력할 수 없습니다.");
         }
